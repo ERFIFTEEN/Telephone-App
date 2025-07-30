@@ -1,0 +1,101 @@
+implementation 'androidx.core:core-ktx:1.12.0'
+implementation 'androidx.appcompat:appcompat:1.6.1'
+<uses-permission android:name="android.permission.CALL_PHONE" />
+<uses-permission android:name="android.permission.READ_CONTACTS" />
+<uses-permission android:name="android.permission.READ_CALL_LOG" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <EditText
+        android:id="@+id/phoneNumberInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter phone number" />
+    <Button
+        android:id="@+id/callButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Call" />
+</LinearLayout>
+
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+    private val REQUEST_CALL = 1
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        callButton.setOnClickListener {
+            makePhoneCall()
+        }
+    }
+
+    private fun makePhoneCall() {
+        val phoneNumber = phoneNumberInput.text.toString()
+        if (phoneNumber.trim().isNotEmpty()) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL)
+            } else {
+                val dial = "tel:$phoneNumber"
+                startActivity(Intent(Intent.ACTION_CALL, Uri.parse(dial)))
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CALL && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            makePhoneCall()
+        }
+    }
+}
+import android.provider.ContactsContract
+
+fun fetchContacts() {
+    val cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
+    while (cursor?.moveToNext() == true) {
+        val name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+        val number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+        // Add to a list and display in a RecyclerView
+    }
+    cursor?.close()
+}
+
+import android.provider.CallLog
+
+fun fetchCallLogs() {
+    val cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, null, null, null, null)
+    while (cursor?.moveToNext() == true) {
+        val number = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER))
+        val date = cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE))
+        // Display in a list
+    }
+    cursor?.close()
+}
+
+import android.telephony.PhoneStateListener
+import android.telephony.TelephonyManager
+
+fun listenForIncomingCalls() {
+    val telephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+    telephonyManager.listen(object : PhoneStateListener() {
+        override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+            when (state) {
+                TelephonyManager.CALL_STATE_RINGING -> {
+                    // Handle incoming call (e.g., show notification or custom screen)
+                }
+            }
+        }
+    }, PhoneStateListener.LISTEN_CALL_STATE)
+}
+
