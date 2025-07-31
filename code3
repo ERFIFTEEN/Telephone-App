@@ -1,0 +1,15 @@
+import android.telephony.PhoneStateListener
+import android.telephony.TelephonyManager
+
+fun listenForIncomingCalls() {
+    val telephonyManager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+    telephonyManager.listen(object : PhoneStateListener() {
+        override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+            when (state) {
+                TelephonyManager.CALL_STATE_RINGING -> {
+                    // Handle incoming call (e.g., show notification or custom screen)
+                }
+            }
+        }
+    }, PhoneStateListener.LISTEN_CALL_STATE)
+}
