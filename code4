@@ -1,0 +1,15 @@
+ }
+    cursor?.close()
+}
+
+import android.provider.CallLog
+
+fun fetchCallLogs() {
+    val cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, null, null, null, null)
+    while (cursor?.moveToNext() == true) {
+        val number = cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER))
+        val date = cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE))
+        // Display in a list
+    }
+    cursor?.close()
+}
