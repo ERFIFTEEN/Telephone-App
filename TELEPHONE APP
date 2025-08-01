@@ -59,13 +59,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-import android.provider.ContactsContract
-
-fun fetchContacts() {
-    val cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
-    while (cursor?.moveToNext() == true) {
-        val name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-        val number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-        // Add to a list and display in a RecyclerView
    
 
