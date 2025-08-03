@@ -1,0 +1,11 @@
+  private fun makePhoneCall() {
+        val phoneNumber = phoneNumberInput.text.toString()
+        if (phoneNumber.trim().isNotEmpty()) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL)
+            } else {
+                val dial = "tel:$phoneNumber"
+                startActivity(Intent(Intent.ACTION_CALL, Uri.parse(dial)))
+            }
+        }
+    }
